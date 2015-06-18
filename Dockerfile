@@ -27,9 +27,12 @@ RUN echo "deb http://www.rabbitmq.com/debian/ testing main" >> /etc/apt/sources.
     /usr/share/doc \
     /usr/share/doc-base
 
-RUN rabbitmq-plugins enable rabbitmq_management
+RUN rabbitmq-plugins enable rabbitmq_mqtt rabbitmq_stomp rabbitmq_management rabbitmq_management_agent rabbitmq_management_visualiser rabbitmq_federation rabbitmq_federation_management sockjs
 
-# For RabbitMQ and RabbitMQ Admin
-EXPOSE 5672 15672
+ADD script/rabbitmq-start.sh /root/rabbitmq-start
+RUN chmod +x /root/rabbitmq-start
 
-ENTRYPOINT ["/usr/sbin/rabbitmq-server"]
+# AMQP port and Management interface, epmd port, and the inet_dist_listen_min through inet_dist_listen_max ranges
+EXPOSE 5672 15672 4369 9100 9101 9102 9103 9104 9105
+
+ENTRYPOINT ["/root/rabbitmq-start"]
